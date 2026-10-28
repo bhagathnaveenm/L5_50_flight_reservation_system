@@ -1,0 +1,7 @@
+| Issue | Type | Line(s) | Description | Fix Approach |
+|-------|------|---------|-------------|--------------|
+| Unsafe dynamic evaluation of baggage surcharge | Security | 45-47 | The code used `eval()` on user-controlled input, which can execute arbitrary commands and is a major injection risk. | Replaced the expression parsing with a restricted AST evaluator that only allows numeric operations and `base_fare`. |
+| Weak password/hash implementation | Security | 51-52 | The passenger hash used MD5, which is cryptographically weak and vulnerable to collision attacks. | Switched to `hashlib.sha256()` for a secure, collision-resistant hash. |
+| Shell command execution in manifest export | Security | 60-63 | `os.system()` executed a shell command based on file input, which is vulnerable to command injection and unsafe practice. | Removed the shell call and used a safe file write with `with open(..., encoding="utf-8")`. |
+| Mutable default argument | Bug | 15 | `baggage_tags=[]` created one shared list across calls, leading to state leakage between bookings. | Changed the default to `None` and created a new list inside the function when needed. |
+| Bare except block | Reliability / Error handling | 27-32 | The cancellation function caught all exceptions and silently swallowed errors, making debugging harder and masking real faults. | Replaced the broad exception handler with an explicit validity check for the requested flight. |
